@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+
+# IDE
+.idea/
+
+# Orbit
+cache/*
+!cache/.gitkeep
+
+# Logs
+*.log
