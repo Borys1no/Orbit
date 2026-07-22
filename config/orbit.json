@@ -1,0 +1,35 @@
+{
+  "weather": {
+    "enabled": true,
+    "api_key": "e3f685a72f76d0ac25e6a275c9048e8d",
+    "city_id": 3657509,
+    "units": "metric",
+    "language": "es",
+    "update_interval": 1800
+  },
+  "calendar": {
+    "enabled": false,
+    "credentials_path": "",
+    "token_path": "",
+    "calendar_id": "primary",
+    "update_interval": 300
+  },
+  "tasks": {
+    "enabled": false,
+    "credentials_path": "",
+    "token_path": "",
+    "task_list": "@default",
+    "update_interval": 60
+  },
+  "music": {
+    "enabled": false,
+    "player": "",
+    "update_interval": 1
+  },
+  "system": {
+    "enabled": true,
+    "update_interval": 5
+  },
+  "cache_dir": "cache",
+  "log_file": null
+}

@@ -10,6 +10,7 @@ from typing import Any
 
 @dataclass(slots=True)
 class WeatherConfig:
+    enabled: bool = False
     api_key: str = ""
     city_id: int = 0
     units: str = "metric"
@@ -19,6 +20,7 @@ class WeatherConfig:
 
 @dataclass(slots=True)
 class CalendarConfig:
+    enabled: bool = False
     credentials_path: str = ""
     token_path: str = ""
     calendar_id: str = "primary"
@@ -27,6 +29,7 @@ class CalendarConfig:
 
 @dataclass(slots=True)
 class TasksConfig:
+    enabled: bool = False
     credentials_path: str = ""
     token_path: str = ""
     task_list: str = "@default"
@@ -35,12 +38,14 @@ class TasksConfig:
 
 @dataclass(slots=True)
 class MusicConfig:
+    enabled: bool = False
     player: str = ""
     update_interval: int = 1
 
 
 @dataclass(slots=True)
 class SystemConfig:
+    enabled: bool = True
     update_interval: int = 5
 
 
@@ -77,6 +82,7 @@ class OrbitConfig:
     def to_dict(self) -> dict[str, Any]:
         return {
             "weather": {
+                "enabled": self.weather.enabled,
                 "api_key": self.weather.api_key,
                 "city_id": self.weather.city_id,
                 "units": self.weather.units,
@@ -84,22 +90,26 @@ class OrbitConfig:
                 "update_interval": self.weather.update_interval,
             },
             "calendar": {
+                "enabled": self.calendar.enabled,
                 "credentials_path": self.calendar.credentials_path,
                 "token_path": self.calendar.token_path,
                 "calendar_id": self.calendar.calendar_id,
                 "update_interval": self.calendar.update_interval,
             },
             "tasks": {
+                "enabled": self.tasks.enabled,
                 "credentials_path": self.tasks.credentials_path,
                 "token_path": self.tasks.token_path,
                 "task_list": self.tasks.task_list,
                 "update_interval": self.tasks.update_interval,
             },
             "music": {
+                "enabled": self.music.enabled,
                 "player": self.music.player,
                 "update_interval": self.music.update_interval,
             },
             "system": {
+                "enabled": self.system.enabled,
                 "update_interval": self.system.update_interval,
             },
             "cache_dir": self.cache_dir,
