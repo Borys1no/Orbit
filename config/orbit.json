@@ -22,7 +22,7 @@
     "update_interval": 60
   },
   "music": {
-    "enabled": false,
+    "enabled": true,
     "player": "",
     "update_interval": 1
   },

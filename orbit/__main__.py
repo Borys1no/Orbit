@@ -36,6 +36,11 @@ def _build_plugins(config: OrbitConfig, cache: CacheManager) -> list:
 
         plugins.append(SystemPlugin(config=config.system, cache=cache))
 
+    if config.music.enabled:
+        from orbit.plugins.music.plugin import MusicPlugin
+
+        plugins.append(MusicPlugin(config=config.music, cache=cache))
+
     return plugins
 
 
