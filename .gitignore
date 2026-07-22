@@ -12,6 +12,9 @@ __pycache__/
 # Orbit
 cache/*
 !cache/.gitkeep
+config/google_credentials.json
+config/google_token_*.json
+config/orbit.json
 
 # Logs
 *.log

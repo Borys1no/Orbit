@@ -41,6 +41,16 @@ def _build_plugins(config: OrbitConfig, cache: CacheManager) -> list:
 
         plugins.append(MusicPlugin(config=config.music, cache=cache))
 
+    if config.tasks.enabled:
+        from orbit.plugins.tasks.plugin import TasksPlugin
+
+        plugins.append(TasksPlugin(config=config.tasks, cache=cache))
+
+    if config.calendar.enabled:
+        from orbit.plugins.calendar.plugin import CalendarPlugin
+
+        plugins.append(CalendarPlugin(config=config.calendar, cache=cache))
+
     return plugins
 
 
