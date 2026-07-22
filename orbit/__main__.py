@@ -31,6 +31,11 @@ def _build_plugins(config: OrbitConfig, cache: CacheManager) -> list:
 
         plugins.append(WeatherPlugin(config=config.weather, cache=cache))
 
+    if config.system.enabled:
+        from orbit.plugins.system.plugin import SystemPlugin
+
+        plugins.append(SystemPlugin(config=config.system, cache=cache))
+
     return plugins
 
 
