@@ -1,0 +1,501 @@
+¿Qué es Orbit?
+
+Orbit es una plataforma de widgets para escritorio basada en Conky, desarrollada en Python, cuyo objetivo es proporcionar un panel moderno, modular y altamente personalizable para sistemas Linux.
+
+A diferencia de los temas tradicionales de Conky, donde toda la lógica se encuentra mezclada entre scripts Bash, Lua y archivos .conf, Orbit separa completamente la lógica del negocio, la obtención de datos y la interfaz gráfica, siguiendo principios de ingeniería de software modernos.
+
+El objetivo no es crear un simple tema de Conky, sino construir un framework de widgets que permita desarrollar nuevos módulos de forma sencilla, reutilizable y mantenible.
+
+En el futuro, cualquier desarrollador podrá crear un nuevo widget sin modificar el núcleo del sistema.
+
+Filosofía del proyecto
+
+Orbit se construye siguiendo una idea muy sencilla:
+
+Conky únicamente dibuja información. Nunca debe ser responsable de obtenerla.
+
+Conky será tratado como una capa de presentación.
+
+Toda la lógica vivirá en Python.
+
+Esto significa que Orbit tendrá dos grandes partes:
+
+Python
+        ↓
+cache/*.json
+        ↓
+Conky
+
+Python obtiene, procesa y almacena la información.
+
+Conky únicamente lee esos datos y los muestra.
+
+Objetivos del proyecto
+
+Orbit busca resolver varios problemas que presentan la mayoría de configuraciones de Conky.
+
+Entre ellos:
+
+código difícil de mantener
+scripts duplicados
+dependencias entre widgets
+poca reutilización
+dificultad para agregar nuevas funcionalidades
+falta de pruebas
+poca escalabilidad
+
+Nuestro objetivo es que Orbit pueda crecer durante años sin necesidad de reescribir el proyecto.
+
+Tecnologías utilizadas
+
+El proyecto utilizará principalmente:
+
+Python 3.14
+Conky
+Lua (únicamente para dibujo avanzado)
+JSON
+Git
+GitHub
+Ruff
+Black
+Pytest
+
+En el futuro podrán añadirse:
+
+Google Calendar API
+Google Tasks API
+Spotify API
+Playerctl
+OpenWeather
+GitHub API
+Home Assistant
+Docker
+SystemD
+Arquitectura
+
+Orbit utilizará una arquitectura modular inspirada en Clean Architecture y en el patrón Plugin.
+
+No implementaremos Clean Architecture al pie de la letra, porque sería excesivo para este proyecto, pero adoptaremos muchas de sus ideas.
+
+La arquitectura estará dividida en capas claramente separadas.
+
+UI (Conky)
+
+↓
+
+Plugins
+
+↓
+
+Services
+
+↓
+
+Modelos
+
+↓
+
+Configuración
+
+↓
+
+Cache
+
+Cada capa tendrá una única responsabilidad.
+
+Separación de responsabilidades
+UI
+
+La carpeta ui contiene únicamente la interfaz gráfica.
+
+Aquí vivirán:
+
+orbit.conf
+widgets
+temas
+scripts Lua
+
+Esta capa nunca accederá a Internet.
+
+Nunca leerá APIs.
+
+Nunca ejecutará lógica de negocio.
+
+Solo mostrará información.
+
+Plugins
+
+Los plugins son el corazón de Orbit.
+
+Cada plugin representa una funcionalidad del sistema.
+
+Ejemplos:
+
+Weather
+Calendar
+Tasks
+Music
+System
+
+Cada plugin será completamente independiente.
+
+Un plugin nunca conocerá la implementación interna de otro.
+
+Services
+
+Cada plugin delega el trabajo pesado a un Service.
+
+Por ejemplo:
+
+WeatherPlugin
+
+↓
+
+WeatherService
+
+El servicio es responsable de:
+
+consultar APIs
+leer archivos
+procesar información
+convertir formatos
+validar datos
+
+Nunca dibuja nada.
+
+Nunca conoce Conky.
+
+Modelos
+
+Los modelos representan datos.
+
+Ejemplo:
+
+WeatherData
+
+Contendrá únicamente información.
+
+temperatura
+
+humedad
+
+presión
+
+descripción
+
+No contendrá lógica.
+
+Configuración
+
+Toda la configuración del sistema se almacenará en un único lugar.
+
+config/orbit.json
+
+Desde allí se configurará:
+
+API Keys
+ciudades
+idioma
+unidades
+intervalos de actualización
+
+Ningún plugin tendrá configuraciones "quemadas" en el código.
+
+Cache
+
+Orbit trabajará mediante cache.
+
+Por ejemplo:
+
+cache/weather.json
+
+cache/tasks.json
+
+cache/calendar.json
+
+cache/music.json
+
+Los plugins escribirán información allí.
+
+Conky únicamente la leerá.
+
+Esto evita hacer llamadas constantes a Internet.
+
+También reduce el consumo de CPU.
+
+Flujo de información
+
+Cuando Orbit esté funcionando ocurrirá lo siguiente.
+
+Weather Plugin
+
+↓
+
+Weather Service
+
+↓
+
+OpenWeather API
+
+↓
+
+WeatherData
+
+↓
+
+cache/weather.json
+
+↓
+
+Conky
+
+↓
+
+Pantalla
+
+Todos los plugins seguirán exactamente el mismo flujo.
+
+Sistema de Plugins
+
+Orbit implementará un sistema de plugins.
+
+Cada plugin heredará de una clase base.
+
+Algo similar a:
+
+Plugin
+
+La clase base definirá el ciclo de vida de todos los módulos.
+
+initialize()
+
+update()
+
+stop()
+
+Todos los plugins seguirán este contrato.
+
+Esto hace que el Scheduler pueda ejecutarlos sin conocer sus detalles internos.
+
+Scheduler
+
+El Scheduler será el responsable de coordinar todos los plugins.
+
+No conocerá la lógica del clima.
+
+No conocerá Google Calendar.
+
+Simplemente ejecutará cada plugin según su intervalo de actualización.
+
+Ejemplo:
+
+Weather
+
+cada 30 minutos
+
+Calendar
+
+cada 5 minutos
+
+Tasks
+
+cada minuto
+
+Music
+
+cada segundo
+
+El Scheduler decidirá cuándo ejecutar cada módulo.
+
+Sistema de Configuración
+
+Orbit utilizará un sistema tipado basado en dataclasses.
+
+Ejemplo:
+
+OrbitConfig
+
+↓
+
+WeatherConfig
+
+CalendarConfig
+
+MusicConfig
+
+TasksConfig
+
+La configuración será cargada una única vez.
+
+Posteriormente todos los plugins compartirán la misma instancia.
+
+Comunicación entre módulos
+
+Los plugins no se comunicarán directamente.
+
+Toda interacción se realizará mediante:
+
+cache
+eventos
+scheduler
+
+Esto reduce el acoplamiento.
+
+Eventos
+
+El proyecto incluirá un sistema simple de eventos.
+
+Ejemplo:
+
+PluginStarted
+
+PluginStopped
+
+PluginUpdated
+
+PluginFailed
+
+Esto permitirá registrar errores y facilitar futuras ampliaciones.
+
+Sistema de Logs
+
+Orbit tendrá un sistema centralizado de logging.
+
+Cada plugin escribirá mensajes como:
+
+Weather updated
+
+Google authentication succeeded
+
+Calendar synchronized
+
+Task cache generated
+
+Esto facilitará la depuración.
+
+Estilo de código
+
+Seguiremos PEP 8.
+
+El proyecto utilizará:
+
+Black
+
+para el formateo automático.
+
+Ruff
+
+para el análisis estático.
+
+Pytest
+
+para pruebas.
+
+Todo commit deberá pasar estas herramientas antes de subirse a GitHub.
+
+Organización del proyecto
+
+La estructura principal será:
+
+orbit/
+
+    core/
+
+        scheduler.py
+
+        plugin.py
+
+        config.py
+
+        cache.py
+
+        logger.py
+
+        events.py
+
+    plugins/
+
+        weather/
+
+        calendar/
+
+        tasks/
+
+        music/
+
+        system/
+
+    ui/
+
+        orbit.conf
+
+        widgets/
+
+        lua/
+
+Cada módulo tendrá una responsabilidad claramente definida.
+
+Principios SOLID
+
+Orbit seguirá los principios SOLID siempre que aporten claridad y mantenibilidad:
+
+S — Responsabilidad Única: cada clase tendrá un propósito claro.
+O — Abierto/Cerrado: podremos añadir nuevos plugins sin modificar el núcleo.
+L — Sustitución de Liskov: cualquier plugin podrá sustituir a otro que implemente el mismo contrato.
+I — Segregación de Interfaces: las clases dependerán solo de lo que realmente necesiten.
+D — Inversión de Dependencias: los módulos de alto nivel dependerán de abstracciones (por ejemplo, la clase base Plugin) y no de implementaciones concretas.
+
+No aplicaremos estos principios de forma rígida, sino cuando mejoren el diseño.
+
+Escalabilidad
+
+Orbit está diseñado para crecer.
+
+En el futuro podrán añadirse plugins como:
+
+Google Calendar
+Google Tasks
+Spotify
+GitHub Notifications
+Gmail
+Docker
+Kubernetes
+Home Assistant
+Monitor de batería
+Estado de VPN
+Estado de Git
+Noticias RSS
+Calendario local (ICS)
+Monitor de servidores
+Criptomonedas
+Bolsa
+Sensores del sistema
+Correo IMAP
+Discord
+Slack
+Microsoft Teams
+
+Todos seguirán exactamente la misma arquitectura.
+
+Filosofía de desarrollo
+
+El desarrollo de Orbit seguirá un enfoque iterativo:
+
+Diseñar una funcionalidad pequeña.
+Implementarla completamente.
+Probarla.
+Formatear el código (black).
+Verificar calidad (ruff).
+Añadir o actualizar pruebas cuando corresponda.
+Hacer un commit pequeño y descriptivo.
+Publicarlo en GitHub.
+
+Cada commit deberá dejar el proyecto en un estado funcional. No se subirán cambios que rompan la ejecución o dejen características incompletas.
+
+Objetivo final
+
+Orbit no pretende ser únicamente un tema de Conky. La meta es convertirse en una plataforma abierta para crear widgets de escritorio en Linux, con una arquitectura moderna, modular y mantenible.
+
+Queremos que cualquier desarrollador pueda entender el proyecto, añadir un nuevo plugin siguiendo un patrón consistente y contribuir sin tener que modificar el núcleo del sistema.
+
+En definitiva, Orbit busca combinar la flexibilidad y ligereza de Conky con prácticas de ingeniería de software actuales, de manera que el proyecto pueda evolucionar durante muchos años sin perder claridad, calidad ni facilidad de mantenimiento.

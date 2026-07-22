@@ -2,12 +2,18 @@
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+include = ["orbit*"]
 
 [project]
 name = "orbit"
 version = "0.1.0"
 description = "A modular Linux desktop dashboard powered by Conky and Python"
 requires-python = ">=3.14"
+dependencies = [
+    "psutil",
+    "requests",
+]
 
 
 [tool.black]

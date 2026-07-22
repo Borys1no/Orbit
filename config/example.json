@@ -1,0 +1,30 @@
+{
+  "weather": {
+    "api_key": "YOUR_OPENWEATHER_API_KEY",
+    "city_id": 3435910,
+    "units": "metric",
+    "language": "es",
+    "update_interval": 1800
+  },
+  "calendar": {
+    "credentials_path": "config/credentials.json",
+    "token_path": "config/token.json",
+    "calendar_id": "primary",
+    "update_interval": 300
+  },
+  "tasks": {
+    "credentials_path": "config/credentials.json",
+    "token_path": "config/token.json",
+    "task_list": "@default",
+    "update_interval": 60
+  },
+  "music": {
+    "player": "",
+    "update_interval": 1
+  },
+  "system": {
+    "update_interval": 5
+  },
+  "cache_dir": "cache",
+  "log_file": null
+}
